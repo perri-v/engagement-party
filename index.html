@@ -39,9 +39,9 @@
 
     /* ═══════════════════════════════════════
        ENVELOPE ANIMATION (recolored for burgundy theme)
-       Closed envelope → flap opens (pattern liner revealed) →
-       card rises tilted and straightens → envelope fades → page
-       All overlapping smoothly via one keyframe per element.
+       On load: envelope flap opens + body disappears quickly.
+       Then the letter (card) renders and floats upward (2.5s duration).
+       Then overlay fades and main landing page renders (unchanged).
        ═══════════════════════════════════════ */
     .envelope-overlay {
       position: fixed;
@@ -83,16 +83,15 @@
       transform-origin: center bottom;
     }
 
-    /* Single smooth animation: opens then fades with envelope */
+    /* Envelope flap: opens quickly (to show liner), then drops/fades as it disappears */
     .env-flap-top.go {
-      animation: flapFullSequence 4.5s ease forwards;
+      animation: flapFullSequence 1.8s ease forwards;
     }
 
     @keyframes flapFullSequence {
       0%   { transform: translateX(-50%) rotateX(0deg); opacity: 1; }
-      25%  { transform: translateX(-50%) rotateX(-180deg); opacity: 1; }
-      75%  { transform: translateX(-50%) rotateX(-180deg); opacity: 1; }
-      85%  { transform: translateX(-50%) rotateX(-180deg); opacity: 1; }
+      25%  { transform: translateX(-50%) rotateX(-180deg); opacity: 1; } /* open by ~0.45s */
+      55%  { transform: translateX(-50%) rotateX(-180deg); opacity: 1; }
       100% { transform: translateX(-50%) rotateX(-180deg) translateY(60px); opacity: 0; }
     }
 
@@ -155,12 +154,12 @@
     }
 
     .env-body.go {
-      animation: envBodySequence 4.5s ease forwards;
+      animation: envBodySequence 1.8s ease forwards;
     }
 
     @keyframes envBodySequence {
       0%   { transform: translateX(-50%) translateY(0); opacity: 1; }
-      85%  { transform: translateX(-50%) translateY(0); opacity: 1; }
+      50%  { transform: translateX(-50%) translateY(0); opacity: 1; }
       100% { transform: translateX(-50%) translateY(60px); opacity: 0; }
     }
 
@@ -222,16 +221,18 @@
       box-shadow: 0 4px 30px rgba(0,0,0,0.15);
     }
 
-    /* Card waits for flap, then rises tilted and straightens */
+    /* Letter (card) floats upward after envelope opens. Completes rise in 2.5s. */
+    .anim-card {
+      opacity: 0; /* hidden until we explicitly reveal it after envelope opens */
+    }
     .anim-card.go {
-      animation: cardFullSequence 4.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      animation: cardFullSequence 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
     }
 
     @keyframes cardFullSequence {
       0%   { transform: translateX(-50%) rotate(-10deg) translateY(0); }
-      25%  { transform: translateX(-50%) rotate(-10deg) translateY(0); }
+      15%  { transform: translateX(-50%) rotate(-10deg) translateY(0); }
       55%  { transform: translateX(-50%) rotate(-4deg) translateY(-280px); }
-      80%  { transform: translateX(-50%) rotate(0deg) translateY(-500px); }
       100% { transform: translateX(-50%) rotate(0deg) translateY(-500px); }
     }
 
@@ -791,13 +792,12 @@
       .envelope-scene { width: 320px; height: 295px; }
       .anim-card { width: 230px; height: 326px; bottom: 32px; }
       .anim-card.go {
-        animation: cardMob 4.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        animation: cardMob 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
       }
       @keyframes cardMob {
         0%   { transform: translateX(-50%) rotate(-10deg) translateY(0); }
-        25%  { transform: translateX(-50%) rotate(-10deg) translateY(0); }
+        15%  { transform: translateX(-50%) rotate(-10deg) translateY(0); }
         55%  { transform: translateX(-50%) rotate(-4deg) translateY(-180px); }
-        80%  { transform: translateX(-50%) rotate(0deg) translateY(-320px); }
         100% { transform: translateX(-50%) rotate(0deg) translateY(-320px); }
       }
       .env-flap-top { width: 320px; height: 128px; bottom: 166px; }
@@ -837,7 +837,8 @@
   <div class="envelope-overlay" id="envelopeOverlay">
     <div class="envelope-scene">
 
-      <!-- Card inside the envelope: the exact trimmed screenshot pops out (scaled to fit the envelope card area, matching the landing page invitation) -->
+      <!-- Card inside the envelope: uses the same card-only.png as the main page. 
+           Update instructions (for refreshing the baked image text) are in the comment block above the .details-bar (search for "LOCATION DETAILS"). -->
       <div class="anim-card" id="animCard">
         <img src="card-only.png" alt="Evan &amp; Perri's Engagement Party" style="width: 100%; height: 100%; object-fit: cover; display: block;">
       </div>
@@ -878,7 +879,10 @@
 
             <!-- Full-height arch spanning entire card -->
             <div class="card-arch-full">
-              <!-- Exact invitation card from your sample screenshot - scaled to match Farah dimensions (tall portrait, not square). This gives the literal exact border pattern (single thick organic wavy line), text placement, format, graphics, and layout from the photo with no squished top or empty bottom. -->
+              <!-- 
+                Main invitation card visual (from your screenshot).
+                See the comment block above the .details-bar (search for "LOCATION DETAILS") for instructions on refreshing the card image if you update the baked text in your design file.
+              -->
               <img src="card-only.png" alt="Evan &amp; Perri's Engagement Party" style="width: 100%; height: auto; display: block; max-width: 560px; margin: 0 auto;">
             </div>
 
@@ -898,6 +902,28 @@
 
       <p class="rsvp-description">We're so excited to celebrate our engagement with everyone we love!<br><br>Dress Code: Cocktail Attire<br>Cocktails + Hors D'Oeuvres will be served</p>
 
+      <!-- 
+        ================================================================
+        LOCATION DETAILS (Elsie Rooftop)
+        ================================================================
+
+        The "Where" section below has been updated with the full venue + address
+        and a clickable Google Maps link (using the URL you provided).
+
+        Note: The card image (card-only.png) still has "NEW YORK, NY" baked into
+        the graphic from the earlier screenshot. The text details in the bar
+        below are separate from the image.
+
+        If you later want the visual card itself to show the full address:
+          1. Update your design file with the final address text in the card layout.
+          2. Take a new screenshot (save as e.g. final-card.png on Desktop).
+          3. Run these commands:
+             cp "/Users/perrivimadalal/Desktop/final-card.png" .
+             sips -c 1060 740 --cropOffset 11 16 final-card.png --out card-only.png
+          4. git add card-only.png && git commit -m "Update card with final location" && git push
+        (Adjust crop numbers if your new screenshot framing is different; test by opening card-only.png after)
+      -->
+
       <div class="details-bar">
         <div class="details-col">
           <div class="details-col-label">When</div>
@@ -909,7 +935,8 @@
         <div class="details-col">
           <div class="details-col-label">Where</div>
           <div class="details-col-value">
-            New York, NY (address to be announced)
+            <a href="https://www.google.com/maps/place/elsie+rooftop/data=!4m2!3m1!1s0x89c25980aaf10ed1:0x7dd52c612fe8b392?sa=X&ved=1t:242&ictx=111" target="_blank" rel="noopener noreferrer">Elsie Rooftop</a><br>
+            1412 Broadway, New York, NY 10018
           </div>
         </div>
         <div class="details-col">
@@ -921,18 +948,6 @@
       <div class="rsvp-form-section" id="rsvpFormSection">
         <h3>We're so glad you can make it!</h3>
         <form id="rsvpForm" onsubmit="submitRSVP(event)">
-          <div class="form-group">
-            <label for="name">Name (Please list all names in Party)</label>
-            <input type="text" id="name" name="name" required>
-          </div>
-          <div class="form-group">
-            <label for="phone">Cell Number</label>
-            <input type="tel" id="phone" name="phone" required placeholder="(123) 456-7890">
-          </div>
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required placeholder="you@example.com">
-          </div>
           <div class="form-group">
             <label for="guests"># of Guests</label>
             <select id="guests" name="guests" required>
@@ -948,6 +963,20 @@
               <option value="10">10</option>
             </select>
           </div>
+          <div id="name-fields">
+            <!-- Dynamically populated by updateNameFields() based on # of Guests.
+                 For 1: single "Name" field.
+                 For 2+: "Name 1", "Name 2", ... fields.
+                 On submit each name produces a separate row (shared phone/email/guests/dietary). -->
+          </div>
+          <div class="form-group">
+            <label for="phone">Cell Number</label>
+            <input type="tel" id="phone" name="phone" required placeholder="(123) 456-7890">
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required placeholder="you@example.com">
+          </div>
           <div class="form-group">
             <label for="dietary">Dietary Restrictions</label>
             <input type="text" id="dietary" name="dietary" placeholder="e.g. Vegetarian, Nut allergy, None">
@@ -960,8 +989,23 @@
         <h3>We'll miss you!</h3>
         <form id="declineForm" onsubmit="submitDecline(event)">
           <div class="form-group">
-            <label for="declineName">Name (Please list all names in Party)</label>
-            <input type="text" id="declineName" name="name" required>
+            <label for="decline-guests"># of Guests</label>
+            <select id="decline-guests" name="guests" required>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+            </select>
+          </div>
+          <div id="decline-name-fields">
+            <!-- Dynamically added name fields based on # of Guests selection.
+                 Each name gets its own row in the sheet (for regrets / No). -->
           </div>
           <div class="form-group">
             <label for="declineMessage">Send a Note (Optional)</label>
@@ -987,7 +1031,10 @@
   <script>
     // ═══════════════════════════════════════
     // ENVELOPE ANIMATION
-    // Sequence: flap opens (revealing liner) → card rises → envelope fades → page appears
+    // - On 'load' (full UI rendered): immediately start envelope open + disappear (1.8s)
+    // - Card/letter stays hidden initially (not visible before envelope opens)
+    // - After brief delay (envelope opens), letter renders + starts floating upward (2.5s)
+    // - Once letter upward completes, fade overlay and render main landing page (no other changes)
     // ═══════════════════════════════════════
     window.addEventListener('load', function () {
       var flap = document.getElementById('envFlap');
@@ -996,25 +1043,34 @@
       var overlay = document.getElementById('envelopeOverlay');
       var page = document.getElementById('pageContent');
 
-      // All three start simultaneously — timing is baked into the keyframes
-      // Total duration: 4.5s
-      // 0-25%: flap opens (card waits)
-      // 25-80%: card rises tilted → straightens (overlaps with flap being open)
-      // 85-100%: envelope + flap fade down together
+      // Start envelope (flap + body) animation immediately for open + disappear
       flap.classList.add('go');
-      card.classList.add('go');
       body.classList.add('go');
 
-      // Reveal page
+      // Hide the letter/card initially so it's not visible before the envelope opens
+      card.style.opacity = '0';
+
+      // After envelope has opened (flap flipped), reveal + start the letter floating up.
+      // Letter upward must complete in 2.5s.
+      var ENVELOPE_OPEN_DELAY = 700; // ms - flap should be visibly open
+      setTimeout(function () {
+        // Quick pop-in for the letter as it starts to rise out of the open envelope
+        card.style.transition = 'opacity 120ms ease';
+        card.style.opacity = '1';
+        card.classList.add('go');  // triggers the 2.5s upward animation
+      }, ENVELOPE_OPEN_DELAY);
+
+      // Reveal main landing page only after letter has finished its 2.5s upward animation
+      var LETTER_UP_TIME = 2500;
       setTimeout(function () {
         overlay.classList.add('fade-out');
         page.classList.add('visible');
-      }, 4200);
+      }, ENVELOPE_OPEN_DELAY + LETTER_UP_TIME);
 
-      // Cleanup
+      // Cleanup: remove overlay after fade completes
       setTimeout(function () {
         overlay.remove();
-      }, 5200);
+      }, ENVELOPE_OPEN_DELAY + LETTER_UP_TIME + 900);
     });
 
     // ═══════════════════════════════════════
@@ -1057,11 +1113,63 @@
       if (choice === 'yes') {
         btnAttend.classList.add('selected');
         formSection.classList.add('show');
+        // Ensure name fields exist (in case of any load timing)
+        if (typeof updateNameFields === 'function') updateNameFields('name-fields', 'guests');
         formSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
         btnDecline.classList.add('selected');
         declineSection.classList.add('show');
+        // Ensure decline name fields exist
+        if (typeof updateNameFields === 'function') updateNameFields('decline-name-fields', 'decline-guests');
         declineSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    // ═══════════════════════════════════════
+    // DYNAMIC NAME FIELDS (shared for Yes and No RSVP)
+    // Pass containerId (e.g. 'name-fields' or 'decline-name-fields')
+    // and guestsSelectId (e.g. 'guests' or 'decline-guests')
+    // When # of Guests > 1, show additional "Name 2", "Name 3" etc.
+    // On submit, each non-empty name becomes its own row in the sheet.
+    // ═══════════════════════════════════════
+    function updateNameFields(containerId, guestsSelectId) {
+      var container = document.getElementById(containerId);
+      if (!container) return;
+      var guestsSelect = document.getElementById(guestsSelectId);
+      var num = parseInt(guestsSelect ? guestsSelect.value : '1', 10) || 1;
+
+      // Preserve values the user already typed if they change the dropdown
+      var existingValues = [];
+      var prevInputs = container.querySelectorAll('input');
+      prevInputs.forEach(function (inp) {
+        existingValues.push(inp.value || '');
+      });
+
+      container.innerHTML = '';
+
+      for (var i = 0; i < num; i++) {
+        var group = document.createElement('div');
+        group.className = 'form-group';
+
+        var label = document.createElement('label');
+        label.setAttribute('for', containerId + '-name-' + i);
+        // Primary is always "Name"; additional are "Name 2", "Name 3"...
+        label.textContent = (i === 0) ? 'Name' : 'Name ' + (i + 1);
+
+        var input = document.createElement('input');
+        input.type = 'text';
+        input.id = containerId + '-name-' + i;
+        input.required = true;
+        input.placeholder = (i === 0)
+          ? 'Your full name'
+          : 'Guest ' + (i + 1) + ' full name';
+        if (existingValues[i]) {
+          input.value = existingValues[i];
+        }
+
+        group.appendChild(label);
+        group.appendChild(input);
+        container.appendChild(group);
       }
     }
 
@@ -1071,10 +1179,19 @@
       btn.disabled = true;
       btn.textContent = 'Sending...';
       var form = document.getElementById('rsvpForm');
+
+      // Collect all individual Name fields (one per guest). Each will become its own row.
+      var nameInputs = document.querySelectorAll('#name-fields input[type="text"]');
+      var names = [];
+      nameInputs.forEach(function (inp) {
+        var v = (inp.value || '').trim();
+        if (v) names.push(v);
+      });
+
       var data = {
         timestamp: new Date().toISOString(),
         attending: 'Yes',
-        name: form.name.value,
+        names: names,           // array: one row per name, sharing phone/email/guests/dietary below
         phone: form.phone.value,
         email: form.email.value,
         guests: form.guests.value,
@@ -1105,16 +1222,25 @@
       var btn = document.getElementById('declineSubmitBtn');
       btn.disabled = true;
       btn.textContent = 'Sending...';
-      var form = document.getElementById('declineForm');
+
+      // Collect all individual Name fields (one per guest). Each will become its own row.
+      var nameInputs = document.querySelectorAll('#decline-name-fields input[type="text"]');
+      var names = [];
+      nameInputs.forEach(function (inp) {
+        var v = (inp.value || '').trim();
+        if (v) names.push(v);
+      });
+
+      var guestsSelect = document.getElementById('decline-guests');
       var data = {
         timestamp: new Date().toISOString(),
         attending: 'No',
-        name: form.querySelector('#declineName').value,
+        names: names,           // array: one row per name, sharing guests count etc.
         phone: '',
         email: '',
-        guests: '0',
+        guests: guestsSelect ? guestsSelect.value : '0',
         dietary: '',
-        message: form.querySelector('#declineMessage').value
+        message: document.getElementById('declineMessage').value
       };
       try {
         if (GOOGLE_SCRIPT_URL) {
@@ -1133,6 +1259,35 @@
         btn.disabled = false;
         btn.textContent = 'Send Regrets';
       }
+    }
+
+    // Initialize dynamic multi-name fields for both Yes and No.
+    // Default 1 guest → one "Name" input.
+    // Re-runs when user changes the respective # of Guests dropdown.
+    function initDynamicNameFields() {
+      // Yes RSVP
+      var yesGuests = document.getElementById('guests');
+      if (yesGuests) {
+        yesGuests.addEventListener('change', function () {
+          updateNameFields('name-fields', 'guests');
+        });
+        updateNameFields('name-fields', 'guests');
+      }
+
+      // No / Decline RSVP
+      var declineGuests = document.getElementById('decline-guests');
+      if (declineGuests) {
+        declineGuests.addEventListener('change', function () {
+          updateNameFields('decline-name-fields', 'decline-guests');
+        });
+        updateNameFields('decline-name-fields', 'decline-guests');
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initDynamicNameFields);
+    } else {
+      initDynamicNameFields();
     }
   </script>
 </body>
