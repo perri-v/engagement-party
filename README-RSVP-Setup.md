@@ -32,42 +32,50 @@ Your RSVPs from the engagement party website will now be sent directly to this G
 
 The website sends this JSON structure:
 
-**Will Attend:**
+**Will Attend (new multi-guest behavior):**
+If the user selects 2+ guests, the form collects separate Name fields.
+The script receives a "names" array and writes **one row per name**, repeating phone/email/guests(total)/dietary on every row for that party.
 ```json
 {
   "timestamp": "2026-...",
   "attending": "Yes",
-  "name": "Name here (all names in party)",
-  "email": "",
+  "names": ["Perri V", "Evan T"],
+  "phone": "(555) 555-5555",
+  "email": "perri@example.com",
   "guests": "2",
   "dietary": "Vegetarian",
   "message": ""
 }
 ```
+→ Results in 2 rows in the sheet (Name column has "Perri V" then "Evan T"; Phone/Email/Guests/Dietary are identical on both).
 
-**Will Not Attend:**
+**Will Not Attend (new multi-guest behavior, symmetric to Yes):**
+If the user selects 2+ guests in the decline form, the form collects separate Name fields.
+The script receives a "names" array and writes **one row per name**, with attending="No" and the guests total repeated.
 ```json
 {
   "timestamp": "2026-...",
   "attending": "No",
-  "name": "Name here (all names in party)",
+  "names": ["Alex R", "Jordan K"],
+  "phone": "",
   "email": "",
-  "guests": "0",
+  "guests": "2",
   "dietary": "",
-  "message": "Optional note..."
+  "message": "Sorry we will miss it!"
 }
 ```
+→ Results in 2 rows in the sheet (Name has the individual names; Guests="2", attending="No" repeated on both).
 
-The Apps Script appends these as a new row in the order:
-Timestamp | Attending | Name | Email | Guests | Dietary | Message
+The Apps Script appends in this exact column order:
+Timestamp | Attending | Name | Phone | Email | Guests | Dietary | Message
 
 ## Recommended Sheet Headers (Row 1)
 
-Put these in the first row of your sheet for clarity:
+Put these in the first row of your sheet for clarity (8 columns):
 
-| A          | B         | C    | D     | E      | F       | G       |
-|------------|-----------|------|-------|--------|---------|---------|
-| Timestamp  | Attending | Name | Email | Guests | Dietary | Message |
+| A          | B         | C    | D     | E      | F       | G       | H       |
+|------------|-----------|------|-------|--------|---------|---------|---------|
+| Timestamp  | Attending | Name | Phone | Email  | Guests  | Dietary | Message |
 
 ## Troubleshooting
 
