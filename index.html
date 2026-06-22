@@ -800,21 +800,11 @@
         55%  { transform: translateX(-50%) rotate(-4deg) translateY(-180px); }
         100% { transform: translateX(-50%) rotate(0deg) translateY(-320px); }
       }
-      .envelope-scene { background: var(--burgundy); } /* prevent paper bg pattern from showing through gaps in the closed envelope on mobile */
       .env-flap-top { width: 320px; height: 128px; bottom: 166px; }
       .flap-front { border-left-width: 160px; border-right-width: 160px; border-bottom-width: 128px; }
       .flap-back { width: 320px; height: 128px; }
       .flap-back-tri { border-left-width: 160px; border-right-width: 160px; border-bottom-width: 128px; }
-      .flap-back-liner {
-        position: absolute;
-        bottom: 5px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 300px;
-        height: 118px;
-        overflow: hidden;
-        clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
-      }
+      .flap-back-liner { width: 300px; height: 118px; }
       .env-body { width: 320px; height: 166px; }
       .env-inner-flap-l { border-left-width: 160px; border-top-width: 0; border-bottom-width: 166px; }
       .env-inner-flap-r { border-right-width: 160px; border-top-width: 0; border-bottom-width: 166px; }
